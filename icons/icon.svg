@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="a" gradientTransform="rotate(85)">
+      <stop offset="5%" stop-color="#ff3377" />
+      <stop offset="95%" stop-color="#221133" />
+    </linearGradient>
+    <filter x="-4.9%" y="-2.4%" width="109.7%" height="109.7%" filterUnits="objectBoundingBox" id="b">
+      <feOffset dy="10" in="SourceAlpha" result="shadowOffsetOuter1"/>
+      <feGaussianBlur stdDeviation="5" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" in="shadowBlurOuter1"/>
+    </filter>
+    <mask id="c">
+      <rect width="464" height="464" x="24" y="24" fill="#fff" rx="116" ry="116" />
+    </mask>
+    <g fill="#fff" fill-rule="evenodd" filter="url(#d)" transform="scale(3)" id="e">
+    <path d="M40 55h10l10 10H40v10h10l10 10v10l-10 10H40L30 95h20V85H40L30 75V65zM70 55h20l10 10v30l-10 10H70zm10 10h10v30H80zM110 55h10v40h20v10h-30" />
+  </g>
+  </defs>
+  <rect width="464" height="464" x="24" y="24" fill="url(#a)" stroke="#000" filter="url(#b)" rx="116" ry="116" />
+  <rect width="464" height="464" x="24" y="24" fill="url(#a)" stroke="#000" rx="116" ry="116" fill-opacity="0.2" />
+  <path fill="#fff" fill-opacity=".1" d="M0 0h512v80L0 86z" mask="url(#c)" />
+  <path fill="#fff" fill-opacity=".05" d="M0 0h512v300L0 306z" mask="url(#c)" />
+  
+  
+  <use xlink:href="#e" filter="url(#b)"/>
+  <use xlink:href="#e" fill-opacity="0.9"/>
+  
+</svg>
