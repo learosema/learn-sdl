@@ -14,4 +14,4 @@ magick -background none icon.svg -resize 512x512 windows/icon_512x512.png
 # iconutil -c icns icon.iconset
 
 # Linux
-magick -size 1024x1024 -background none icon.svg baseicon.png
+magick -background none icon.svg -resize 1024x1024 baseicon.png
