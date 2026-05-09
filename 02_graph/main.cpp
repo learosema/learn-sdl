@@ -72,9 +72,11 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_RenderClear(renderer);
     
     SDL_SetRenderDrawColorFloat(renderer,0,0,0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
-    for (int i = 0; i < 180; i++){
-        double a = 5.0 + sin(now * .01) * 2.0;
-        double b = 4.0 + cos(now * .1) * 2.0;
+    for (int i = 0; i < 360; i++){
+        double a = 1.0 + sin(now * .1) * 2.0;
+        double b = 2.0 + sin(now * .1) * 2.0;
+        double c = 3.0 + sin(now * .1) * 2.0;
+        double d = 4.0 + sin(now * .1) * 2.0;
         double aR = double(g_width) / double(g_height);
         int cx = (g_width / 2);
         int cy = (g_height / 2);
@@ -82,8 +84,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         int h  = cy - 10;
         int x1 = cx - w * cos(a * double(i) * SDL_PI_D / 180.0);
         int y1 = cy - h * sin(b * double(i) * SDL_PI_D / 180.0);
-        int x2 = cx + w * cos(a * double(i) * SDL_PI_D / 180.0);
-        int y2 = cy + h * sin(b * double(i) * SDL_PI_D / 180.0);
+        int x2 = cx + w * cos(c * double(i) * SDL_PI_D / 180.0);
+        int y2 = cy + h * sin(d * double(i) * SDL_PI_D / 180.0);
 
         const float red = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1));
         const float green = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1 + SDL_PI_D * 2 / 3));
