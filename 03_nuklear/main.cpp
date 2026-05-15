@@ -111,7 +111,7 @@ static char* nk_sdl_dtoa(char* str, double d);
 
 
 #define NK_IMPLEMENTATION
-#include "../../nuklear.h"
+#include "nuklear.h"
 #define NK_SDL3_RENDERER_IMPLEMENTATION
 #include "nuklear_sdl3_renderer.h"
 
@@ -195,7 +195,7 @@ SDL_AppInit(void** appstate, int argc, char* argv[])
         return nk_sdl_fail();
     }
 
-    app = SDL_malloc(sizeof(*app));
+    app = (nk_sdl_app *)SDL_malloc(sizeof(*app));
     if (app == NULL) {
         return nk_sdl_fail();
     }

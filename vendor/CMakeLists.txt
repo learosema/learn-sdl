@@ -24,6 +24,12 @@ FetchContent_Declare(
   GIT_TAG v1.15.3
 )
 
+FetchContent_Declare(
+  Nuklear
+  GIT_REPOSITORY "git@github.com:Immediate-Mode-UI/Nuklear.git"
+  GIT_TAG v4.13.3
+)
+
 # For SDL2 to be able to override options
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
@@ -31,4 +37,4 @@ set(DOCTEST_NO_INSTALL ON)
 set(FMT_INSTALL OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
 
-FetchContent_MakeAvailable(doctest fmt SDL3 spdlog)
+FetchContent_MakeAvailable(doctest fmt SDL3 spdlog Nuklear)
