@@ -1,9 +1,10 @@
 #include <SDL3/SDL.h>
 #include <cmath>
+#include <nuklear.h>
 
-#include "graph-app.hpp"
+#include "nuklear-app.hpp"
 
-SDL_AppResult GraphApp::Init() {
+SDL_AppResult NuklearApp::Init() {
     SDL_SetAppMetadata("Example Renderer Clear", "1.0", "lgbt.lea.renderer-clear");
     
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -19,7 +20,7 @@ SDL_AppResult GraphApp::Init() {
     return SDL_APP_CONTINUE;
 }
 
-GraphApp::~GraphApp()
+NuklearApp::~NuklearApp()
 {
 	if (_renderer) {
 		SDL_DestroyRenderer(_renderer);
@@ -31,7 +32,7 @@ GraphApp::~GraphApp()
 	}
 }
 
-SDL_AppResult GraphApp::Iterate()
+SDL_AppResult NuklearApp::Iterate()
 {
     if (_resized) {
         SDL_SetRenderLogicalPresentation(_renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
@@ -75,7 +76,7 @@ SDL_AppResult GraphApp::Iterate()
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
-SDL_AppResult GraphApp::HandleEvent(const SDL_Event* const event)
+SDL_AppResult NuklearApp::HandleEvent(const SDL_Event* const event)
 {
 	if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */

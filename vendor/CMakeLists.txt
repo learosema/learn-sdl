@@ -25,7 +25,7 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  Nuklear
+  nuklear
   GIT_REPOSITORY "git@github.com:Immediate-Mode-UI/Nuklear.git"
   GIT_TAG v4.13.3
 )
@@ -37,4 +37,7 @@ set(DOCTEST_NO_INSTALL ON)
 set(FMT_INSTALL OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
 
-FetchContent_MakeAvailable(doctest fmt SDL3 spdlog Nuklear)
+FetchContent_MakeAvailable(doctest fmt SDL3 spdlog nuklear)
+
+add_library(nuklear INTERFACE)
+target_include_directories(nuklear INTERFACE ${nuklear_SOURCE_DIR}/)

@@ -1,10 +1,11 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <nuklear.h>
 
-class GraphApp {
+class NuklearApp {
 
 public:
-	~GraphApp();
+	~NuklearApp();
 
 	SDL_AppResult Iterate();
 	
@@ -22,5 +23,7 @@ private:
 
 	SDL_Window*   _window   = nullptr;
 	SDL_Renderer* _renderer = nullptr;
-
+    struct nk_context *ctx;  // Nuklear context (the core piece)
+    struct nk_colorf _bg = {.r=0, .g=0, .b=0.0f, .a=1.0f};     // Background color (RGBA float)
+    enum nk_anti_aliasing _AA = NK_ANTI_ALIASING_ON;
 };
