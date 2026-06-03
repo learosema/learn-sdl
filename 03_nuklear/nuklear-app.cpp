@@ -1,21 +1,84 @@
 #include <SDL3/SDL.h>
-#include <cmath>
+
+#include "nuklear-config.hpp"
+
+#define NK_IMPLEMENTATION
 #include <nuklear.h>
+
+#define NK_SDL3_RENDERER_IMPLEMENTATION
+#include "nuklear_sdl3_renderer.h"
 
 #include "nuklear-app.hpp"
 
+static char* nk_sdl_dtoa(char *str, double d)
+{
+    NK_ASSERT(str);
+    if (!str) return NULL;
+    (void)SDL_snprintf(str, 99999, "%.17g", d);
+    return str;
+}
+
+
+NuklearApp::NuklearApp() {
+    _width = 640;
+	_height = 480;
+	_resized = true;
+    _devicePixelRatio = 1.0;
+
+	_window = nullptr;
+	_renderer = nullptr;
+    _ctx = nullptr;  // Nuklear context (the core piece)
+    // _bg = {.r=0, .g=0, .b=0.0f, .a=1.0f};     // Background color (RGBA float)
+    _AA = NK_ANTI_ALIASING_ON;
+}
+
+
 SDL_AppResult NuklearApp::Init() {
-    SDL_SetAppMetadata("Example Renderer Clear", "1.0", "lgbt.lea.renderer-clear");
+    SDL_SetAppMetadata("Nuklear App", "1.0", "lgbt.lea.nuklear-app");
     
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("examples/renderer/clear", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Nuklear App", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+
+    // enable VSync
+    SDL_SetRenderVSync(_renderer, 1);
+
+    // get device pixel ratio
+    const float devicePixelRatio = SDL_GetWindowDisplayScale(_window);
+    SDL_SetRenderScale(_renderer, devicePixelRatio, devicePixelRatio);
+    _devicePixelRatio = devicePixelRatio;
+
+    // Init Nuklear
+    _ctx = nk_sdl_init(_window, _renderer, nk_sdl_allocator());
+
+
+    // Font Baking
+    struct nk_font_atlas *atlas;
+    struct nk_font_config config = nk_font_config(0);
+    struct nk_font *font;
+
+    // Prepare the atlas
+    atlas = nk_sdl_font_stash_begin(_ctx);          
+    font = nk_font_atlas_add_default(atlas, 13 * _devicePixelRatio, &config); // Built-in font
+    // Or load your own TTF:
+    // font = nk_font_atlas_add_from_file(atlas, "MyFont.ttf", 16 * font_scale, &config);
+    // Upload texture to GPU
+    nk_sdl_font_stash_end(_ctx);                    
+
+    // HiDPI hack: scale the font height back down so layouts are calculated correctly
+    font->handle.height /= _devicePixelRatio;
+
+    // Activate the font
+    nk_style_set_font(_ctx, &font->handle);         
+
+    // Start first input collection cycle
+    nk_input_begin(_ctx);
 
     return SDL_APP_CONTINUE;
 }
@@ -34,57 +97,61 @@ NuklearApp::~NuklearApp()
 
 SDL_AppResult NuklearApp::Iterate()
 {
+    // stop collecting input
+    nk_input_end(_ctx);
+
+    // 2) Define the GUI (immediate mode!)
+    if (nk_begin(_ctx, "Demo", nk_rect(50, 50, 230, 250),
+        NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+        NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+    {
+        // ... widgets go here ...
+    }
+    nk_end(_ctx);
+
+
     if (_resized) {
         SDL_SetRenderLogicalPresentation(_renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
         _resized = false;
     }
     const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
     
-    SDL_SetRenderDrawColorFloat(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
+    // Win95-like Background :D
+    SDL_SetRenderDrawColorFloat(_renderer, 0, 0.5, 0.5, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
     
-    /* clear the window to the draw color. */
     SDL_RenderClear(_renderer);
     
-    SDL_SetRenderDrawColorFloat(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
-    for (int i = 0; i < 360; i++){
-        double a = 1.0 + sin(now * .1) * 2.0;
-        double b = 2.0 + sin(now * .1) * 2.0;
-        double c = 3.0 + sin(now * .1) * 2.0;
-        double d = 4.0 + sin(now * .1) * 2.0;
-        double aR = double(_width) / double(_height);
-        int cx = (_width / 2);
-        int cy = (_height / 2);
-        int w  = (double(cx) / aR - 10.0);
-        int h  = cy - 10;
-        int x1 = cx - w * cos(a * double(i) * SDL_PI_D / 180.0);
-        int y1 = cy - h * sin(b * double(i) * SDL_PI_D / 180.0);
-        int x2 = cx + w * cos(c * double(i) * SDL_PI_D / 180.0);
-        int y2 = cy + h * sin(d * double(i) * SDL_PI_D / 180.0);
+    nk_sdl_render(_ctx, _AA);
+    nk_sdl_update_TextInput(_ctx);
 
-        const float red = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1));
-        const float green = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1 + SDL_PI_D * 2 / 3));
-        const float blue = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1 + SDL_PI_D * 4 / 3));
-        SDL_SetRenderDrawColorFloat(_renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);
-
-        SDL_RenderLine(_renderer, x1, y1, x2, y2);
-    }
-
-
-    /* put the newly-cleared rendering on the screen. */
+    // render present frame
     SDL_RenderPresent(_renderer);
 
-    return SDL_APP_CONTINUE;  /* carry on with the program! */
+    // start collecting input again
+    nk_input_begin(_ctx);
+
+    return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult NuklearApp::HandleEvent(const SDL_Event* const event)
+SDL_AppResult NuklearApp::HandleEvent(SDL_Event* const event)
 {
-	if (event->type == SDL_EVENT_QUIT) {
-        return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
+    switch (event->type) {
+        case SDL_EVENT_QUIT: {
+            return SDL_APP_SUCCESS;
+        }
+        case SDL_EVENT_WINDOW_RESIZED: {
+            _width = event->window.data1;
+            _height = event->window.data2;
+            _resized = true;
+            break;
+        }
     }
-    if (event->type == SDL_EVENT_WINDOW_RESIZED) {
-        _width = event->window.data1;
-        _height = event->window.data2;
-        _resized = true;
-    }
+
+    // IMPORTANT: convert event coordinates to renderer space
+    SDL_ConvertEventToRenderCoordinates(_renderer, event);
+
+    // Forward event to Nuklear
+    nk_sdl_handle_event(_ctx, event);
+
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }

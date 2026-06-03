@@ -1,10 +1,8 @@
 #include "SDL3/SDL_init.h"
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
-#include <cassert>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <nuklear.h>
 #include "nuklear-app.hpp"
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
