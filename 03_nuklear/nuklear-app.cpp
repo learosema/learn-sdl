@@ -29,19 +29,19 @@ NuklearApp::NuklearApp() {
 	_renderer = nullptr;
     _ctx = nullptr;  // Nuklear context (the core piece)
     // _bg = {.r=0, .g=0, .b=0.0f, .a=1.0f};     // Background color (RGBA float)
-    _AA = NK_ANTI_ALIASING_ON;
+    _useAntiAliasing = NK_ANTI_ALIASING_ON;
 }
 
 
 SDL_AppResult NuklearApp::Init() {
-    SDL_SetAppMetadata("Nuklear App", "1.0", "lgbt.lea.nuklear-app");
+    SDL_SetAppMetadata("Nuklear", "1.0", "lgbt.lea.learn-sdl.nuklear");
     
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Nuklear App", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Nuklear", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
@@ -85,10 +85,16 @@ SDL_AppResult NuklearApp::Init() {
 
 NuklearApp::~NuklearApp()
 {
+    if (_ctx) {
+        nk_sdl_shutdown(_ctx);
+        _ctx = nullptr;
+    }
+
 	if (_renderer) {
 		SDL_DestroyRenderer(_renderer);
 		_renderer = nullptr;
 	}
+
 	if (_window) {
 		SDL_DestroyWindow(_window);
 		_window = nullptr;
@@ -117,14 +123,11 @@ SDL_AppResult NuklearApp::Iterate()
     const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
     
     // Win95-like Background :D
-    SDL_SetRenderDrawColorFloat(_renderer, 0, 0.5, 0.5, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
-    
+    SDL_SetRenderDrawColorFloat(_renderer, 0.0f, 0.5f, 0.5f, 1.0f);
     SDL_RenderClear(_renderer);
-    
-    nk_sdl_render(_ctx, _AA);
+    nk_sdl_render(_ctx, _useAntiAliasing);
     nk_sdl_update_TextInput(_ctx);
 
-    // render present frame
     SDL_RenderPresent(_renderer);
 
     // start collecting input again
