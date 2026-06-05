@@ -34,7 +34,7 @@ SDL_SetRenderVSync(renderer, 1); // Enable VSync
 On Retina or HiDPI displays the renderer is scaled so the UI doesn't appear tiny:
 
 ```c
-const float scale = SDL_GetWindowDisplayScale(app->window);
+const float scale = SDL_GetWindowDisplayScale(window);
 SDL_SetRenderScale(renderer, scale, scale);
 float font_scale = scale; // Remember for font baking
 ```
@@ -216,15 +216,15 @@ nk_label(ctx, "background:", NK_TEXT_LEFT);
 ### Combo box with color picker
 
 ```c
-if (nk_combo_begin_color(ctx, nk_rgb_cf(app->bg), nk_vec2(widget_width, 400))) {
+if (nk_combo_begin_color(ctx, nk_rgb_cf(bg), nk_vec2(widget_width, 400))) {
     nk_layout_row_dynamic(ctx, 120, 1);
-    app->bg = nk_color_picker(ctx, app->bg, NK_RGBA);
+    bg = nk_color_picker(ctx, bg, NK_RGBA);
 
     nk_layout_row_dynamic(ctx, 25, 1);
-    app->bg.r = nk_propertyf(ctx, "#R:", 0, app->bg.r, 1.0f, 0.01f, 0.005f);
-    app->bg.g = nk_propertyf(ctx, "#G:", 0, app->bg.g, 1.0f, 0.01f, 0.005f);
-    app->bg.b = nk_propertyf(ctx, "#B:", 0, app->bg.b, 1.0f, 0.01f, 0.005f);
-    app->bg.a = nk_propertyf(ctx, "#A:", 0, app->bg.a, 1.0f, 0.01f, 0.005f);
+    bg.r = nk_propertyf(ctx, "#R:", 0, bg.r, 1.0f, 0.01f, 0.005f);
+    bg.g = nk_propertyf(ctx, "#G:", 0, bg.g, 1.0f, 0.01f, 0.005f);
+    bg.b = nk_propertyf(ctx, "#B:", 0, bg.b, 1.0f, 0.01f, 0.005f);
+    bg.a = nk_propertyf(ctx, "#A:", 0, bg.a, 1.0f, 0.01f, 0.005f);
 
     nk_combo_end(ctx);
 }
@@ -238,19 +238,9 @@ if (nk_combo_begin_color(ctx, nk_rgb_cf(app->bg), nk_vec2(widget_width, 400))) {
 ## Phase 4: Cleanup (`SDL_AppQuit`)
 
 ```c
-void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-    struct nk_sdl_app* app = (struct nk_sdl_app*)appstate;
-    if (app) {
-        nk_input_end(app->ctx);       // Close the open input block
-        nk_sdl_shutdown(app->ctx);    // Free Nuklear, atlas, and textures
-        SDL_DestroyRenderer(app->renderer);
-        SDL_DestroyWindow(app->window);
-        SDL_free(app);
-    }
-}
+nk_input_end(ctx);       // Close the open input block
+nk_sdl_shutdown(ctx);    // Free Nuklear, font and textures
 ```
-
----
 
 ## Defines: what must/can I set?
 
