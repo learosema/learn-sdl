@@ -4,14 +4,14 @@
 #include "graph-app.hpp"
 
 SDL_AppResult GraphApp::Init() {
-    SDL_SetAppMetadata("Example Renderer Clear", "1.0", "lgbt.lea.renderer-clear");
+    SDL_SetAppMetadata("Graph", "1.0", "lgbt.lea.learn-sdl.graph");
     
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("examples/renderer/clear", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Graph", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }

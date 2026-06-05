@@ -28,5 +28,5 @@ private:
 	SDL_Renderer* _renderer;
     struct nk_context *_ctx;  // Nuklear context (the core piece)
 
-    enum nk_anti_aliasing _AA;
+    enum nk_anti_aliasing _useAntiAliasing;
 };
