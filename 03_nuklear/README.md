@@ -1,58 +1,15 @@
 # Nuklear + SDL3 Renderer – Documentation
 
-Based on `demo/sdl3_renderer/main.c` from the [Nuklear repository](https://github.com/Immediate-Mode-UI/Nuklear).
+Based on `demo/sdl3_renderer/` from the [Nuklear repository](https://github.com/Immediate-Mode-UI/Nuklear).
 
----
+![Screenshot of the application window with a teal background, showing a dimgray movable Nuklear window with the caption "Demo"](screenshot.png)
+
 
 ## What is Nuklear?
 
 Nuklear is an **immediate-mode GUI library** written in ANSI C — a single header file (`nuklear.h`). This means there is no widget state stored inside the library. You describe the GUI **every frame from scratch** and Nuklear renders it. State like "is this checkbox checked?" lives with **you** — in your own variables.
 
 > **Golden rule:** There is no `nk_button_create()` followed later by `nk_button_draw()`. Instead: `if (nk_button_label(ctx, "Click me")) { /* was clicked */ }` — everything in one call, every frame.
-
----
-
-## SDL3 Main Callbacks – the new entry point model
-
-Instead of a classic `main()` with a hand-written event loop, this demo uses the **SDL3 Main Callbacks** system:
-
-```c
-#define SDL_MAIN_USE_CALLBACKS
-#include <SDL3/SDL_main.h>
-```
-
-SDL3 will then automatically call four functions that you implement:
-
-| Function | When called | Purpose |
-|---|---|---|
-| `SDL_AppInit()` | Once at startup | Initialize window, renderer, and Nuklear |
-| `SDL_AppEvent()` | Per SDL event | Forward events to Nuklear |
-| `SDL_AppIterate()` | Every frame | Define and render the GUI |
-| `SDL_AppQuit()` | On exit | Clean up resources |
-
-The return value controls the app flow: `SDL_APP_CONTINUE` keeps running, `SDL_APP_SUCCESS` exits cleanly, `SDL_APP_FAILURE` aborts with an error.
-
----
-
-## App state: the `nk_sdl_app` struct
-
-```c
-struct nk_sdl_app {
-    SDL_Window   *window;    // The SDL window
-    SDL_Renderer *renderer;  // SDL hardware renderer
-    struct nk_context *ctx;  // Nuklear context (the core piece)
-    struct nk_colorf bg;     // Background color (RGBA float)
-    enum nk_anti_aliasing AA; // Anti-aliasing on/off
-};
-```
-
-This struct is passed around as `appstate` between callbacks — SDL manages the pointer, you cast it inside each callback:
-
-```c
-struct nk_sdl_app* app = (struct nk_sdl_app*)appstate;
-```
-
----
 
 ## Phase 1: Initialization (`SDL_AppInit`)
 
@@ -65,11 +22,11 @@ SDL_CreateWindowAndRenderer(
     "Nuklear: SDL3 Renderer",
     WINDOW_WIDTH, WINDOW_HEIGHT,
     SDL_WINDOW_RESIZABLE,
-    &app->window,
-    &app->renderer
+    window,
+    renderer
 );
 
-SDL_SetRenderVSync(app->renderer, 1); // Enable VSync
+SDL_SetRenderVSync(renderer, 1); // Enable VSync
 ```
 
 ### 1.2 HiDPI / Display scale
@@ -78,7 +35,7 @@ On Retina or HiDPI displays the renderer is scaled so the UI doesn't appear tiny
 
 ```c
 const float scale = SDL_GetWindowDisplayScale(app->window);
-SDL_SetRenderScale(app->renderer, scale, scale);
+SDL_SetRenderScale(renderer, scale, scale);
 float font_scale = scale; // Remember for font baking
 ```
 
@@ -87,7 +44,7 @@ float font_scale = scale; // Remember for font baking
 ### 1.3 Initialize Nuklear
 
 ```c
-struct nk_context *ctx = nk_sdl_init(app->window, app->renderer, nk_sdl_allocator());
+struct nk_context *ctx = nk_sdl_init(window, renderer, nk_sdl_allocator());
 ```
 
 `nk_sdl_allocator()` is an SDL-native allocator (using `SDL_malloc`/`SDL_free`). Preferable to `NK_INCLUDE_DEFAULT_ALLOCATOR` because it is more portable.
@@ -113,10 +70,6 @@ font->handle.height /= font_scale;
 nk_style_set_font(ctx, &font->handle);         // Activate the font
 ```
 
-**Summary of the flow:** `stash_begin` → add fonts → `stash_end` → correct height → `set_font`
-
-> **Alternative:** `nk_sdl_style_set_debug_font(ctx)` sets a simple 8×8 pixel font — no baking needed, but very small and blurry when scaled.
-
 ### 1.5 Input initialization
 
 ```c
@@ -125,30 +78,19 @@ nk_input_begin(ctx); // Start the first input collection cycle
 
 This call must happen **before** the first event loop iteration. During normal operation it runs at the **end** of `SDL_AppIterate`.
 
----
-
 ## Phase 2: Event handling (`SDL_AppEvent`)
 
+Inside the `HandleEvent` method, invoked by `SDL_AppEvent`, a switch
+statement takes care of handling the events:
+
 ```c
-SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-    struct nk_sdl_app* app = (struct nk_sdl_app*)appstate;
-
-    switch (event->type) {
-        case SDL_EVENT_QUIT:
+switch (event->type) {
+    case SDL_EVENT_QUIT:
+        return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+        if (event->key.key == SDLK_Q && event->key.mod & SDL_KMOD_CTRL)
             return SDL_APP_SUCCESS;
-        case SDL_EVENT_KEY_DOWN:
-            if (event->key.key == SDLK_Q && event->key.mod & SDL_KMOD_CTRL)
-                return SDL_APP_SUCCESS;
-            break;
-    }
-
-    // IMPORTANT: convert event coordinates to renderer space
-    SDL_ConvertEventToRenderCoordinates(app->renderer, event);
-
-    // Forward event to Nuklear
-    nk_sdl_handle_event(app->ctx, event);
-
-    return SDL_APP_CONTINUE;
+        break;
 }
 ```
 
@@ -160,63 +102,45 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 This is the heart of the application — everything happens here every frame:
 
+First, the input collection since the previous screen is closed:
+
 ```c
-SDL_AppResult SDL_AppIterate(void *appstate) {
-    struct nk_sdl_app* app = (struct nk_sdl_app*)appstate;
-    struct nk_context* ctx = app->ctx;
+nk_input_end(ctx);
+```
 
-    // 1) Close the input collection from the previous frame
-    nk_input_end(ctx);
+Then, the UI is defined. The following code defines an empty window:
 
-    // 2) Define the GUI (immediate mode!)
-    if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
-        NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-        NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-    {
-        // ... widgets go here ...
-    }
-    nk_end(ctx);
-
-    // 3) Clear the SDL renderer
-    SDL_SetRenderDrawColorFloat(app->renderer,
-        app->bg.r, app->bg.g, app->bg.b, app->bg.a);
-    SDL_RenderClear(app->renderer);
-
-    // 4) Render Nuklear
-    nk_sdl_render(ctx, app->AA);
-
-    // 5) Sync text input state (for text fields)
-    nk_sdl_update_TextInput(ctx);
-
-    // 6) Present the frame
-    SDL_RenderPresent(app->renderer);
-
-    // 7) Start collecting input for the next frame
-    nk_input_begin(ctx);
-
-    return SDL_APP_CONTINUE;
+```c
+if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
+    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+    NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+{
+    // ... widgets go here ...
 }
+nk_end(ctx);
 ```
 
-### Frame order at a glance
 
-```
-nk_input_end()            ← Close input from the last frame
-  ↓
-Define GUI                 ← nk_begin / widgets / nk_end
-  ↓
-SDL_RenderClear()          ← Clear the screen
-  ↓
-nk_sdl_render()            ← Nuklear draws into the SDL renderer
-  ↓
-nk_sdl_update_TextInput()  ← Sync SDL keyboard input for text fields
-  ↓
-SDL_RenderPresent()        ← Show the frame
-  ↓
-nk_input_begin()           ← Start next input cycle
+The UI is rendered using the `nk_sdl_*` helper functions defined in `nuklear_sdl_renderer.h`:
+
+```c
+// Win95-like Background :D
+SDL_SetRenderDrawColorFloat(renderer, 0.0f, 0.5f, 0.5f, 1.0f);
+SDL_RenderClear(renderer);
+
+nk_sdl_render(ctx, useAntiAliasing);
+nk_sdl_update_TextInput(ctx);
+
+SDL_RenderPresent(renderer);
 ```
 
----
+At the end of the AppIterate function, input collection is 
+started again.
+
+
+```c
+nk_input_begin(ctx);
+```
 
 ## Widget reference from the demo
 
