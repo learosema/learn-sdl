@@ -298,8 +298,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
 
 > **Warning:** These two `_IMPLEMENTATION` defines may only appear in **one** translation unit. Include the headers in other `.c` files without the define.
 
----
-
 ## Common pitfalls
 
 | Problem | Cause | Fix |
@@ -311,25 +309,12 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
 | `NK_IMPLEMENTATION` defined multiple times | Linker error (duplicate symbols) | Only define it in one `.c` file |
 | Input cycle out of order | `nk_input_begin`/`end` incorrectly nested | End of iterate: `begin`; start of iterate: `end` |
 
----
-
-## Suggested project structure
-
-```
-my_project/
-├── nuklear.h                    # Nuklear single-header
-├── nuklear_sdl3_renderer.h      # SDL3 backend
-└── main.c
-    ├── Defines (NK_IMPLEMENTATION etc.)
-    ├── #include "nuklear.h"
-    ├── #include "nuklear_sdl3_renderer.h"
-    ├── struct MyApp { ... }     // Your app state
-    ├── SDL_AppInit()            // Initialization
-    ├── SDL_AppEvent()           // Event handling
-    ├── SDL_AppIterate()         // Frame: GUI + render
-    └── SDL_AppQuit()            // Cleanup
-```
-
----
 
 *Documentation based on `demo/sdl3_renderer/main.c` — Nuklear repository (Immediate-Mode-UI/Nuklear)*
+
+## Further documentation
+
+This article is about using Nuklear in LWJGL and Java.
+It is nicely documented and can be adapted directly: 
+<https://www.thecodingfox.com/nuklear-usage-guide-lwjgl>
+
