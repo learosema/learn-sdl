@@ -9,6 +9,10 @@ class DemoWidget {
 public:
     void Iterate(struct nk_context * const ctx);
 
+    inline int GetSliderValue() const { return _sliderValue; }
+
+private:
+    int _sliderValue = 15;
 
 };
 
