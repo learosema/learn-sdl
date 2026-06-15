@@ -106,15 +106,7 @@ SDL_AppResult NuklearApp::Iterate()
     // stop collecting input
     nk_input_end(_ctx);
 
-    // 2) Define the GUI (immediate mode!)
-    if (nk_begin(_ctx, "Demo", nk_rect(50, 50, 230, 250),
-        NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-        NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-    {
-        // ... widgets go here ...
-    }
-    nk_end(_ctx);
-
+    _demoWidget.Iterate(_ctx);
 
     if (_resized) {
         SDL_SetRenderLogicalPresentation(_renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);

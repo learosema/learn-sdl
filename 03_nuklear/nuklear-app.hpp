@@ -1,5 +1,7 @@
 #pragma once
 
+#include "demo-widget.hpp"
+
 typedef SDL_Window;
 typedef SDL_Renderer;
 
@@ -29,4 +31,6 @@ private:
     struct nk_context *_ctx;  // Nuklear context (the core piece)
 
     enum nk_anti_aliasing _useAntiAliasing;
+
+	DemoWidget _demoWidget;
 };
