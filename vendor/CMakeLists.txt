@@ -26,8 +26,14 @@ FetchContent_Declare(
 
 FetchContent_Declare(
   nuklear
-  GIT_REPOSITORY "git@github.com:Immediate-Mode-UI/Nuklear.git"
+  GIT_REPOSITORY "https://github.com/Immediate-Mode-UI/Nuklear.git"
   GIT_TAG v4.13.3
+)
+
+FetchContent_Declare(
+  cmrc
+  GIT_REPOSITORY "https://github.com/vector-of-bool/cmrc.git"
+  GIT_TAG 2.0.1
 )
 
 # For SDL2 to be able to override options
@@ -37,7 +43,7 @@ set(DOCTEST_NO_INSTALL ON)
 set(FMT_INSTALL OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
 
-FetchContent_MakeAvailable(doctest fmt SDL3 spdlog nuklear)
+FetchContent_MakeAvailable(doctest fmt SDL3 spdlog nuklear cmrc)
 
 add_library(nuklear INTERFACE)
 target_include_directories(nuklear INTERFACE ${nuklear_SOURCE_DIR}/)
