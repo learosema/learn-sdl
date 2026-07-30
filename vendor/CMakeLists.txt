@@ -30,11 +30,18 @@ FetchContent_Declare(
   GIT_TAG v4.13.3
 )
 
+# FetchContent_Declare(
+#   cmrc
+#   GIT_REPOSITORY "https://github.com/vector-of-bool/cmrc.git"
+#   GIT_TAG 2.0.1
+# )
+
 FetchContent_Declare(
-  cmrc
-  GIT_REPOSITORY "https://github.com/vector-of-bool/cmrc.git"
-  GIT_TAG 2.0.1
+  SDL_Image
+  GIT_REPOSITORY "https://github.com/libsdl-org/SDL_image.git"
+  GIT_TAG release-3.4.4
 )
+
 
 # For SDL2 to be able to override options
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
@@ -43,7 +50,7 @@ set(DOCTEST_NO_INSTALL ON)
 set(FMT_INSTALL OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
 
-FetchContent_MakeAvailable(doctest fmt SDL3 spdlog nuklear cmrc)
+FetchContent_MakeAvailable(doctest fmt SDL3 SDL_Image spdlog nuklear cmrc)
 
 add_library(nuklear INTERFACE)
 target_include_directories(nuklear INTERFACE ${nuklear_SOURCE_DIR}/)
