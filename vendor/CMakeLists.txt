@@ -50,7 +50,7 @@ set(DOCTEST_NO_INSTALL ON)
 set(FMT_INSTALL OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
 
-FetchContent_MakeAvailable(doctest fmt SDL3 SDL_Image spdlog nuklear cmrc)
+FetchContent_MakeAvailable(doctest fmt SDL3 SDL_Image spdlog nuklear)
 
 add_library(nuklear INTERFACE)
 target_include_directories(nuklear INTERFACE ${nuklear_SOURCE_DIR}/)
