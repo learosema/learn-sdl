@@ -6,14 +6,14 @@
 #include "tiles.h"
 
 SDL_AppResult TilesApp::Init() {
-    SDL_SetAppMetadata("Graph", "1.0", "lgbt.lea.learn-sdl.graph");
+    SDL_SetAppMetadata("Tiles", "1.0", "lgbt.lea.learn-sdl.tiles");
     
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Graph", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Tiles", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
@@ -51,13 +51,10 @@ SDL_AppResult TilesApp::Iterate()
         _resized = false;
     }
 
-
-    int w = 0, h = 0;
     SDL_FRect dst;
     const float scale = 4.0f;
 
     /* Center the icon and scale it up */
-    SDL_GetRenderOutputSize(_renderer, &w, &h);
     SDL_SetRenderScale(_renderer, scale, scale);
     SDL_GetTextureSize(_tiles, &dst.w, &dst.h);
     dst.x = 0;
@@ -77,10 +74,12 @@ SDL_AppResult TilesApp::HandleEvent(const SDL_Event* const event)
 	if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS; 
     }
+
     if (event->type == SDL_EVENT_WINDOW_RESIZED) {
         _width = event->window.data1;
         _height = event->window.data2;
         _resized = true;
     }
+
     return SDL_APP_CONTINUE;
 }
