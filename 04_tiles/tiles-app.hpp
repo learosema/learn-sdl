@@ -22,5 +22,6 @@ private:
 
 	SDL_Window*   _window   = nullptr;
 	SDL_Renderer* _renderer = nullptr;
+	SDL_Texture*  _tiles    = nullptr;
 
 };

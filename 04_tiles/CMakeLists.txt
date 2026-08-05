@@ -10,4 +10,4 @@ target_sources(${NAME} PRIVATE tiles-app.cpp main.cpp)
 embed_resource(assets/awesome-font.png "awesome-font.h" "AWESOME_FONT")
 embed_resource(assets/tiles.png "tiles.h" "TILES")
 
-target_link_libraries(${NAME} PUBLIC SDL3::SDL3 fmt)
+target_link_libraries(${NAME} PUBLIC SDL3::SDL3 SDL3_image::SDL3_image fmt)
