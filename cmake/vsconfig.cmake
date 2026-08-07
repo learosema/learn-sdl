@@ -1,6 +1,0 @@
-if (WIN32)
-  message(STATUS "Workaround so Windows will find the SDL3 DLL.")
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(CMAKE_WIN32_EXECUTABLE ON)
-endif()
