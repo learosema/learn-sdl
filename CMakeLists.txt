@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.23)
-include("cmake/vsconfig.cmake")
+cmake_minimum_required(VERSION 3.24)
+include("cmake/win32.cmake")
+include("cmake/copy-runtime-dlls.cmake")
 project(LearnSDL)
 add_subdirectory(vendor)
 add_subdirectory(01_window)
