@@ -16,7 +16,7 @@ FetchContent_Declare(
   SDL3
   GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git"
   GIT_TAG release-3.4.14
-  FIND_PACKAGE_ARGS NAMES SDL3 CONFIG
+  FIND_PACKAGE_ARGS NAMES SDL3 CONFIG GLOBAL
 )
 
 FetchContent_Declare(
@@ -41,7 +41,7 @@ FetchContent_Declare(
   SDL_Image
   GIT_REPOSITORY "https://github.com/libsdl-org/SDL_image.git"
   GIT_TAG release-3.4.4
-  FIND_PACKAGE_ARGS NAMES SDL3_image CONFIG
+  FIND_PACKAGE_ARGS NAMES SDL3_image CONFIG GLOBAL
 )
 
 
