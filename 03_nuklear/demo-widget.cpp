@@ -1,3 +1,5 @@
+#include <SDL3/SDL.h>
+#include "nuklear-config.hpp"
 #include <nuklear.h>
 #include "demo-widget.hpp"
 

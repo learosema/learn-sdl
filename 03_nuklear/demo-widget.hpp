@@ -1,7 +1,7 @@
 #ifndef __DEMO_WIDGET_HPP__
 #define __DEMO_WIDGET_HPP__
 
-typedef struct nk_context;
+//typedef struct nk_context;
 
 class DemoWidget {
 
