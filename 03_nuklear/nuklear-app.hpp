@@ -1,9 +1,11 @@
 #pragma once
 
-#include "demo-widget.hpp"
+#include <SDL3/SDL.h>
 
-typedef SDL_Window;
-typedef SDL_Renderer;
+#include "nuklear-config.hpp"
+#include <nuklear.h>
+
+#include "demo-widget.hpp"
 
 class NuklearApp {
 
