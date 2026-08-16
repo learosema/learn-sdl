@@ -23,12 +23,16 @@ SDL_AppResult TilesApp::Init() {
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Tiles", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    if (!SDL_CreateWindowAndRenderer("Tiles", _width, _height, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    _window.reset(window);
+    _renderer.reset(renderer);
 
-    _tiles = IMG_LoadTexture_IO(_renderer, SDL_IOFromConstMem(TILES, TILES_len), true);
+    _tiles.reset(IMG_LoadTexture_IO(_renderer.get(), SDL_IOFromConstMem(TILES, TILES_len), true));
     if (!_tiles) {
         SDL_Log("Couldn't load icon: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
@@ -41,13 +45,13 @@ SDL_AppResult TilesApp::Init() {
     }
 
     SDL_SetSurfaceColorKey(fontSurface, true, SDL_MapSurfaceRGB(fontSurface, 0, 0, 0));
-    _font = SDL_CreateTextureFromSurface(_renderer, fontSurface);
+    _font.reset(SDL_CreateTextureFromSurface(_renderer.get(), fontSurface));
     SDL_DestroySurface(fontSurface);
     if (!_font) {
         SDL_Log("Couldn't create font texture: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_SetTextureScaleMode(_font, SDL_SCALEMODE_NEAREST);
+    SDL_SetTextureScaleMode(_font.get(), SDL_SCALEMODE_NEAREST);
 
     RerollLandscape();
 
@@ -88,29 +92,9 @@ SDL_FRect TilesApp::PickTerrainTile(double noiseValue, int x, int y) const
     };
 }
 
-TilesApp::~TilesApp()
-{
-	if (_renderer) {
-		SDL_DestroyRenderer(_renderer);
-		_renderer = nullptr;
-	}
-	if (_window) {
-		SDL_DestroyWindow(_window);
-		_window = nullptr;
-	}
-    if (_tiles) {
-        SDL_DestroyTexture(_tiles);
-        _tiles = nullptr;
-    }
-    if (_font) {
-        SDL_DestroyTexture(_font);
-        _font = nullptr;
-    }
-}
-
 void TilesApp::DrawText(std::string_view text, float x, float y, SDL_Color color) const
 {
-    SDL_SetTextureColorMod(_font, color.r, color.g, color.b);
+    SDL_SetTextureColorMod(_font.get(), color.r, color.g, color.b);
 
     for (size_t i = 0; i < text.size(); ++i) {
         unsigned char c = static_cast<unsigned char>(text[i]);
@@ -121,7 +105,7 @@ void TilesApp::DrawText(std::string_view text, float x, float y, SDL_Color color
             static_cast<float>(TILE_SIZE)
         };
         SDL_FRect dst{ x + static_cast<float>(i) * TILE_SIZE, y, static_cast<float>(TILE_SIZE), static_cast<float>(TILE_SIZE) };
-        SDL_RenderTexture(_renderer, _font, &src, &dst);
+        SDL_RenderTexture(_renderer.get(), _font.get(), &src, &dst);
     }
 }
 
@@ -134,14 +118,14 @@ void TilesApp::DrawTextWithShadow(std::string_view text, float x, float y, SDL_C
 SDL_AppResult TilesApp::Iterate()
 {
     if (_resized) {
-        SDL_SetRenderLogicalPresentation(_renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
+        SDL_SetRenderLogicalPresentation(_renderer.get(), _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
         _resized = false;
     }
 
-    SDL_SetRenderScale(_renderer, RENDER_SCALE, RENDER_SCALE);
+    SDL_SetRenderScale(_renderer.get(), RENDER_SCALE, RENDER_SCALE);
 
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(_renderer);
+    SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
+    SDL_RenderClear(_renderer.get());
 
     const int cols = static_cast<int>(_width / RENDER_SCALE) / TILE_SIZE + 1;
     const int rows = static_cast<int>(_height / RENDER_SCALE) / TILE_SIZE + 1;
@@ -158,13 +142,13 @@ SDL_AppResult TilesApp::Iterate()
                 static_cast<float>(TILE_SIZE)
             };
 
-            SDL_RenderTexture(_renderer, _tiles, &src, &dst);
+            SDL_RenderTexture(_renderer.get(), _tiles.get(), &src, &dst);
         }
     }
 
     DrawTextWithShadow("PRESS R TO REROLL", 2, 2, SDL_Color{220, 40, 40, 255});
 
-    SDL_RenderPresent(_renderer);
+    SDL_RenderPresent(_renderer.get());
 
     return SDL_APP_CONTINUE;
 }

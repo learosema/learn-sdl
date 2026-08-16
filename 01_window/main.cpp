@@ -15,9 +15,10 @@
 
 #include <fmt/core.h>
 
-/* We will use this renderer to draw into this window every frame. */
-static SDL_Window *window = NULL;
-static SDL_Renderer *renderer = NULL;
+#include <memory>
+
+static std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window{nullptr, SDL_DestroyWindow};
+static std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer{nullptr, SDL_DestroyRenderer};
 
 static int g_width = 640;
 static int g_height = 480;
@@ -34,11 +35,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Window", g_width, g_height, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+    SDL_Window* windowPtr = nullptr;
+    SDL_Renderer* rendererPtr = nullptr;
+    if (!SDL_CreateWindowAndRenderer("Window", g_width, g_height, SDL_WINDOW_RESIZABLE, &windowPtr, &rendererPtr)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_SetRenderLogicalPresentation(renderer, g_width, g_height, SDL_LOGICAL_PRESENTATION_STRETCH);
+    window.reset(windowPtr);
+    renderer.reset(rendererPtr);
+    SDL_SetRenderLogicalPresentation(renderer.get(), g_width, g_height, SDL_LOGICAL_PRESENTATION_STRETCH);
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
@@ -61,7 +66,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
     if (g_size_changed) {
-        SDL_SetRenderLogicalPresentation(renderer, g_width, g_height, SDL_LOGICAL_PRESENTATION_STRETCH);
+        SDL_SetRenderLogicalPresentation(renderer.get(), g_width, g_height, SDL_LOGICAL_PRESENTATION_STRETCH);
         g_size_changed = false;
     }
     const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
@@ -69,23 +74,23 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     const float red = (float) (0.5 + 0.5 * SDL_sin(now));
     const float green = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 2 / 3));
     const float blue = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 4 / 3));
-    SDL_SetRenderDrawColorFloat(renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
-    
+    SDL_SetRenderDrawColorFloat(renderer.get(), red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
+
     /* clear the window to the draw color. */
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(renderer.get());
 
     /* debug output the window size */
     std::string debug_size = fmt::format("{} x {}", g_width, g_height);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_SetRenderScale(renderer, 4.0f, 4.0f);
+    SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderScale(renderer.get(), 4.0f, 4.0f);
     float x = (float)g_width / 8.0f;
-    float y = (float)g_height / 8.0f; 
-    SDL_RenderDebugText(renderer,
+    float y = (float)g_height / 8.0f;
+    SDL_RenderDebugText(renderer.get(),
         x - debug_size.length() * 4,
         y - 4, debug_size.c_str());
 
     /* put the newly-cleared rendering on the screen. */
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer.get());
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
@@ -93,5 +98,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    /* SDL will clean up the window/renderer for us. */
+    renderer.reset();
+    window.reset();
 }

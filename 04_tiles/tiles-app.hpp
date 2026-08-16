@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <memory>
 #include <string_view>
 
 #include "perlin.hpp"
@@ -7,8 +8,6 @@
 class TilesApp {
 
 public:
-	~TilesApp();
-
 	SDL_AppResult Iterate();
 
 	SDL_AppResult Init();
@@ -28,10 +27,10 @@ private:
 	int _height = 480;
 	bool _resized = true;
 
-	SDL_Window*   _window   = nullptr;
-	SDL_Renderer* _renderer = nullptr;
-	SDL_Texture*  _tiles    = nullptr;
-	SDL_Texture*  _font     = nullptr;
+	std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> _window{nullptr, SDL_DestroyWindow};
+	std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> _renderer{nullptr, SDL_DestroyRenderer};
+	std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> _tiles{nullptr, SDL_DestroyTexture};
+	std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> _font{nullptr, SDL_DestroyTexture};
 
 	Perlin _noise;
 	float  _offsetX = 0.0f;

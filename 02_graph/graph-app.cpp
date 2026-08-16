@@ -11,40 +11,32 @@ SDL_AppResult GraphApp::Init() {
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Graph", _width, _height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    if (!SDL_CreateWindowAndRenderer("Graph", _width, _height, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    _window.reset(window);
+    _renderer.reset(renderer);
 
     return SDL_APP_CONTINUE;
-}
-
-GraphApp::~GraphApp()
-{
-	if (_renderer) {
-		SDL_DestroyRenderer(_renderer);
-		_renderer = nullptr;
-	}
-	if (_window) {
-		SDL_DestroyWindow(_window);
-		_window = nullptr;
-	}
 }
 
 SDL_AppResult GraphApp::Iterate()
 {
     if (_resized) {
-        SDL_SetRenderLogicalPresentation(_renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
+        SDL_SetRenderLogicalPresentation(_renderer.get(), _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
         _resized = false;
     }
     const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
-    
-    SDL_SetRenderDrawColorFloat(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
-    
+
+    SDL_SetRenderDrawColorFloat(_renderer.get(), 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
+
     /* clear the window to the draw color. */
-    SDL_RenderClear(_renderer);
-    
-    SDL_SetRenderDrawColorFloat(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
+    SDL_RenderClear(_renderer.get());
+
+    SDL_SetRenderDrawColorFloat(_renderer.get(), 0, 0, 0, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
     for (int i = 0; i < 360; i++){
         double a = 1.0 + sin(now * .1) * 2.0;
         double b = 2.0 + sin(now * .1) * 2.0;
@@ -63,14 +55,14 @@ SDL_AppResult GraphApp::Iterate()
         const float red = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1));
         const float green = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1 + SDL_PI_D * 2 / 3));
         const float blue = (float) (0.5 + 0.5 * SDL_sin(now + double(i) * 0.1 + SDL_PI_D * 4 / 3));
-        SDL_SetRenderDrawColorFloat(_renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);
+        SDL_SetRenderDrawColorFloat(_renderer.get(), red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);
 
-        SDL_RenderLine(_renderer, x1, y1, x2, y2);
+        SDL_RenderLine(_renderer.get(), x1, y1, x2, y2);
     }
 
 
     /* put the newly-cleared rendering on the screen. */
-    SDL_RenderPresent(_renderer);
+    SDL_RenderPresent(_renderer.get());
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
