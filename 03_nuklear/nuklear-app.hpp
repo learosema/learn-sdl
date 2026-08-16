@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include <SDL3/SDL.h>
 
 #include "nuklear-config.hpp"
 #include <nuklear.h>
+#include "nuklear_sdl3_renderer.h"
 
 #include "demo-widget.hpp"
 
@@ -11,10 +14,9 @@ class NuklearApp {
 
 public:
 	NuklearApp();
-	~NuklearApp();
 
 	SDL_AppResult Iterate();
-	
+
 	SDL_AppResult Init();
 
 	SDL_AppResult HandleEvent(SDL_Event* const event);
@@ -28,9 +30,9 @@ private:
 	bool _resized;
 	float _devicePixelRatio;
 
-	SDL_Window* _window;
-	SDL_Renderer* _renderer;
-    struct nk_context *_ctx;  // Nuklear context (the core piece)
+	std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>     _window{nullptr, SDL_DestroyWindow};
+	std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> _renderer{nullptr, SDL_DestroyRenderer};
+	std::unique_ptr<struct nk_context, decltype(&nk_sdl_shutdown)> _ctx{nullptr, nk_sdl_shutdown};  // Nuklear context (the core piece)
 
     enum nk_anti_aliasing _useAntiAliasing;
 
