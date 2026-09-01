@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "exportAsImage.useCurrentScale": true,
+    "fileStates": {
+        "rpg1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "unbenannt.tmx": {
+            "scale": 2.58875,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 400.5794302269435,
+                "y": 218.8314823756639
+            }
+        }
+    },
+    "last.imagePath": "/home/lea/Projects/learn-sdl/04_tiles/map",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+    ],
+    "project": "worldmap.tiled-project",
+    "recentFiles": [
+        "unbenannt.tmx",
+        "rpg1.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

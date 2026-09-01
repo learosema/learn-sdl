@@ -1,0 +1,45 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "unbenannt.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "exportAsImage.useCurrentScale": true,
+    "fileStates": {
+        "rpg1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "unbenannt.tmx": {
+            "scale": 4,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 140.75,
+                "y": -141.375
+            }
+        }
+    },
+    "last.imagePath": "/home/lea/Projects/learn-sdl/04_tiles/rpgmap",
+    "map.fixedSize": true,
+    "map.lastUsedFormat": "tmx",
+    "map.renderOrder": null,
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "unbenannt.tmx",
+        "rpg1.tsx"
+    ],
+    "project": "rpg1.tiled-project",
+    "recentFiles": [
+        "rpg1.tsx",
+        "unbenannt.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
