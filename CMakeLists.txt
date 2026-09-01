@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 include("cmake/win32.cmake")
 include("cmake/copy-runtime-dlls.cmake")
+include("cmake/embed-resource.cmake")
+
 project(LearnSDL)
 add_subdirectory(vendor)
 add_subdirectory(00_common)
@@ -8,3 +10,4 @@ add_subdirectory(01_window)
 add_subdirectory(02_graph)
 add_subdirectory(03_nuklear)
 add_subdirectory(04_tiles)
+add_subdirectory(05_framebuffer)

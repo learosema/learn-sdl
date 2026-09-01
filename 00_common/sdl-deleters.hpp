@@ -15,3 +15,8 @@ struct SDLTextureDeleter
 {
     void operator()(SDL_Texture* p) const;
 };
+
+struct SDLPaletteDeleter
+{
+    void operator()(SDL_Palette* p) const;
+};
