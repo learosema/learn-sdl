@@ -19,18 +19,6 @@ static char* nk_sdl_dtoa(char *str, double d)
     return str;
 }
 
-
-NuklearApp::NuklearApp() {
-    _width = 640;
-	_height = 480;
-	_resized = true;
-    _devicePixelRatio = 1.0;
-
-    // _bg = {.r=0, .g=0, .b=0.0f, .a=1.0f};     // Background color (RGBA float)
-    _useAntiAliasing = NK_ANTI_ALIASING_ON;
-}
-
-
 SDL_AppResult NuklearApp::Init() {
     SDL_SetAppMetadata("Nuklear", "1.0", "lgbt.lea.learn-sdl.nuklear");
     
