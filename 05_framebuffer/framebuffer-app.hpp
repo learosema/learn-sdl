@@ -29,7 +29,5 @@ private:
 	std::unique_ptr<SDL_Texture, SDLTextureDeleter> _lfb_texture;
     std::unique_ptr<SDL_Palette, SDLPaletteDeleter> _palette;
 
-	float  _offsetX = 0.0f;
-	float  _offsetY = 0.0f;
 
 };

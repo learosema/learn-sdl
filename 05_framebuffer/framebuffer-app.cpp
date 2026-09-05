@@ -8,7 +8,7 @@
 
 #include "framebuffer-app.hpp"
 #include "palette.hpp"
-#include "scifi-font.h"
+// #include "scifi-font.h"
 
 namespace {
     constexpr float RENDER_SCALE = 8.0f;
@@ -30,15 +30,6 @@ SDL_AppResult FramebufferApp::Init() {
     }
     _window.reset(window);
     _renderer.reset(renderer);
-
-    
-    
-    SDL_Surface* fontSurface = IMG_Load_IO(SDL_IOFromConstMem(SCIFI_FONT, SCIFI_FONT_len), true);
-    if (!fontSurface) {
-        SDL_Log("Couldn't load font: %s\n", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-
     
     _palette.reset(SDL_CreatePalette(16));
     for (int i = 0; i < 16; i++) {
