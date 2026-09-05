@@ -21,9 +21,6 @@ public:
 
 	SDL_AppResult HandleEvent(SDL_Event* const event);
 
-	inline const int GetWidth() const { return _width; }
-	inline const int GetHeight() const { return _height; }
-
 private:
 	int _width;
 	int _height;
