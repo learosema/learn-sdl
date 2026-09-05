@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <memory>
-#include <string_view>
 
 #include "sdl-deleters.hpp"
 
@@ -17,7 +16,12 @@ public:
 	inline const int GetWidth() const { return _width; }
 	inline const int GetHeight() const { return _height; }
 
+	bool ResizeFramebuffer();
+
 private:
+
+	int _texture_width = 0;
+	int _texture_height = 0; 
 
 	int _width = 640;
 	int _height = 480;
