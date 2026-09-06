@@ -20,3 +20,7 @@ struct SDLPaletteDeleter
 {
     void operator()(SDL_Palette* p) const;
 };
+
+struct SDLGLContextDeleter {
+    void operator()(SDL_GLContext p) const;
+};

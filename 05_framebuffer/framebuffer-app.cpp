@@ -3,7 +3,7 @@
 #include <SDL3/SDL_log.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
-#include <SDL3_image/SDL_image.h>
+
 #include <cmath>
 
 #include "framebuffer-app.hpp"
