@@ -1,6 +1,6 @@
 # Helper function to embed glsl files.
 #
-# embed_glsl(shaders/quad.vert.glsl "${CMAKE_CURRENT_BINARY_DIR}/quad.vert.glsl.h" QUAD_VERT_SRC)
+# embed_glsl(shaders/quad.vert.glsl QUAD_VERT_SRC)
 function(embed_glsl INPUT_FILE VARIABLE_NAME)
     set(OUTPUT_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_FILE}.h")
     set(INPUT_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_FILE}")
