@@ -1,0 +1,4 @@
+{
+    "shader-validator.glsl.targetClient": "OpenGL450",
+    "shader-validator.glsl.spirvVersion": "None"
+}

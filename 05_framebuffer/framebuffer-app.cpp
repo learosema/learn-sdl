@@ -11,7 +11,7 @@
 // #include "scifi-font.h"
 
 namespace {
-    constexpr float RENDER_SCALE = 8.0f;
+    constexpr float renderScale = 8.0f;
 }
 
 SDL_AppResult FramebufferApp::Init() {
@@ -79,8 +79,8 @@ SDL_AppResult FramebufferApp::Iterate()
 bool FramebufferApp::ResizeFramebuffer() {
     
     SDL_SetRenderLogicalPresentation(_renderer.get(), _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH);
-    int new_tex_width = _width / RENDER_SCALE;
-    int new_tex_height = _height / RENDER_SCALE;
+    int new_tex_width = _width / renderScale;
+    int new_tex_height = _height / renderScale;
     if ((_texture_width == new_tex_width) && (_texture_height == new_tex_height)) {
         _resized = false;
         return false;

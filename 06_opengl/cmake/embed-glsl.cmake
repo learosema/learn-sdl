@@ -1,7 +1,8 @@
 # Helper function to embed glsl files.
 #
 # embed_glsl(shaders/quad.vert.glsl "${CMAKE_CURRENT_BINARY_DIR}/quad.vert.glsl.h" QUAD_VERT_SRC)
-function(embed_glsl INPUT_FILE OUTPUT_HEADER VARIABLE_NAME)
+function(embed_glsl INPUT_FILE VARIABLE_NAME)
+    set(OUTPUT_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_FILE}.h")
     set(INPUT_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_FILE}")
     if(NOT EXISTS "${INPUT_FILE_PATH}")
         message(FATAL_ERROR "Shader not found: ${INPUT_FILE_PATH}")
@@ -21,8 +22,8 @@ function(embed_glsl INPUT_FILE OUTPUT_HEADER VARIABLE_NAME)
     file(WRITE "${OUTPUT_HEADER}"
         "#pragma once\n\n"
         "// Generated from ${INPUT_FILE} - do not edit\n"
-        "inline constexpr const char* ${VARIABLE_NAME} = R\"${DELIM}(\n"
-        "${SHADER_SOURCE})${DELIM}\";\n"
+        "inline constexpr const char* ${VARIABLE_NAME} = R\"(\n"
+        "${SHADER_SOURCE})\";\n"
     )
 
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${INPUT_FILE_PATH}")

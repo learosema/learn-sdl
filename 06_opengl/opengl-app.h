@@ -1,12 +1,14 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <memory>
-
-#include "sdl-deleters.hpp"
+#include <glad/glad.h>
+#include <sdl-deleters.hpp>
 
 class OpenGLApp {
 
 public:
+	~OpenGLApp();
+
 	SDL_AppResult Iterate();
 
 	SDL_AppResult Init();
@@ -17,12 +19,17 @@ public:
 
 private:
 
-	int _texture_width = 0;
-	int _texture_height = 0; 
+	bool InitGeometry();
+
+	GLuint _program = 0;
+	GLuint _vao = 0;
+	GLuint _vbo = 0;
+	GLuint _loc_utime = 0;
 
 	int _width = 640;
 	int _height = 480;
 	bool _resized = true;
+	
 
 	std::unique_ptr<SDL_Window, SDLWindowDeleter> _window;
 	std::unique_ptr<SDL_GLContextState, SDLGLContextDeleter> _gl_context;

@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "opengl-app.hpp"
+#include "opengl-app.h"
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     OpenGLApp* app = new OpenGLApp();

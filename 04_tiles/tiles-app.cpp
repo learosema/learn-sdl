@@ -9,7 +9,7 @@
 
 namespace {
     constexpr int TILE_SIZE = 8;
-    constexpr float RENDER_SCALE = 4.0f;
+    constexpr float renderScale = 4.0f;
     constexpr double NOISE_ZOOM = 0.08;
     constexpr int FONT_GLYPHS_PER_ROW = 16;
 
@@ -122,13 +122,13 @@ SDL_AppResult TilesApp::Iterate()
         _resized = false;
     }
 
-    SDL_SetRenderScale(_renderer.get(), RENDER_SCALE, RENDER_SCALE);
+    SDL_SetRenderScale(_renderer.get(), renderScale, renderScale);
 
     SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
     SDL_RenderClear(_renderer.get());
 
-    const int cols = static_cast<int>(_width / RENDER_SCALE) / TILE_SIZE + 1;
-    const int rows = static_cast<int>(_height / RENDER_SCALE) / TILE_SIZE + 1;
+    const int cols = static_cast<int>(_width / renderScale) / TILE_SIZE + 1;
+    const int rows = static_cast<int>(_height / renderScale) / TILE_SIZE + 1;
 
     for (int y = 0; y < rows; ++y) {
         for (int x = 0; x < cols; ++x) {

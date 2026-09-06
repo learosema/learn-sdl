@@ -6,14 +6,37 @@
 
 #include <cmath>
 
-#include "opengl-app.hpp"
+#include "opengl-app.h"
 #include "SDL3/SDL_video.h"
 
 #include <glad/glad.h>
-// #include "scifi-font.h"
+
+#include "shader-utils.h"
+#include "quad.vert.glsl.h"
+#include "quad.frag.glsl.h"
 
 namespace {
-    constexpr float RENDER_SCALE = 8.0f;
+    constexpr float renderScale = 8.0f;
+
+
+    constexpr float quadVertices[] = {
+        -1.0f, -1.0f, // A
+         1.0f, -1.0f, // B
+        -1.0f,  1.0f, // C
+ 
+        -1.0f,  1.0f, // C
+         1.0f, -1.0f, // B
+         1.0f,  1.0f, // D
+
+    /* two counter-clockwise triangles that make up a plane 
+             
+        C___D
+        |\  |
+        | \ |    
+        |  \|    
+        A---B
+    */
+    };
 }
 
 SDL_AppResult OpenGLApp::Init() {
@@ -27,12 +50,12 @@ SDL_AppResult OpenGLApp::Init() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    /* auf macOS zwingend fuer Core-Profile-Contexte, auf Linux/Windows wirkungslos */
+    
+    // required for macOS core profile, does nothing everywhere else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-
 
     SDL_Window* window = SDL_CreateWindow("OpenGL", _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
@@ -55,6 +78,17 @@ SDL_AppResult OpenGLApp::Init() {
  
     SDL_GL_SetSwapInterval(1);
  
+    _program = CreateProgramFromShaders(quadVertexShader, quadFragmentShader);
+    if (! _program) {
+        return SDL_APP_FAILURE;
+    }
+    
+    _loc_utime  = glGetUniformLocation(_program, "uTime");
+
+    if (! InitGeometry()) {
+        return SDL_APP_FAILURE;
+    }
+
     SDL_Log("OpenGL Version: %s", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
     SDL_Log("GLSL Version:   %s", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
     SDL_Log("Renderer:       %s", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
@@ -62,6 +96,31 @@ SDL_AppResult OpenGLApp::Init() {
     return SDL_APP_CONTINUE;
 }
 
+OpenGLApp::~OpenGLApp()
+{
+    if (_program) glDeleteProgram(_program);
+    if (_vbo) glDeleteBuffers(1, &_vbo);
+    if (_vao) glDeleteVertexArrays(1, &_vao);
+}
+
+
+bool OpenGLApp::InitGeometry() {
+    glGenVertexArrays(1, &_vao);
+    glGenBuffers(1, &_vbo);
+ 
+    glBindVertexArray(_vao);
+ 
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+ 
+    /* location 0 passt zu "layout (location = 0) in vec2 aPos" im Vertex-Shader */
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+ 
+    glBindVertexArray(0);
+ 
+    return true;
+}
 
 SDL_AppResult OpenGLApp::Iterate()
 {
@@ -70,9 +129,18 @@ SDL_AppResult OpenGLApp::Iterate()
     }
 
     const float t = static_cast<float>(SDL_GetTicks()) / 1000.0f;
-    glClearColor(0.5f + 0.5f * std::sin(t), 0.2f, 0.5f + 0.5f * std::cos(t), 1.0f);
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+    glUseProgram(_program);
+    glUniform1f(_loc_utime, t);
+ 
+    glBindVertexArray(_vao);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
     SDL_GL_SwapWindow(_window.get());
 
     return SDL_APP_CONTINUE;
