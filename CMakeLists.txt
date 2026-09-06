@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 include("cmake/win32.cmake")
 include("cmake/copy-runtime-dlls.cmake")
 include("cmake/embed-resource.cmake")
+include("cmake/embed-glsl.cmake")
 
 project(LearnSDL)
 add_subdirectory(vendor)

@@ -1,7 +1,6 @@
 set(NAME "06-opengl")
 add_executable(${NAME})
 add_subdirectory(glad)
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed-glsl.cmake")
 
 embed_glsl("quad.vert.glsl" quadVertexShader)
 embed_glsl("quad.frag.glsl" quadFragmentShader)
