@@ -1,5 +1,5 @@
 #version 410 core
-in vec2 aPos;
+layout (location = 0) in vec2 aPos;
 out vec2 vUV;
 out vec2 vPos;
 
